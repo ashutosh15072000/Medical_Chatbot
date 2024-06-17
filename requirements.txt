@@ -1,5 +1,12 @@
+# List of required Python packages for the project
+
+# ctransformers is used for converting data types
 ctransformers==0.2.5
+# sentence-transformers is used for sentence embeddings
 sentence-transformers==2.2.2
+# pinecone-client is used for interacting with Pinecone vector database
 pinecone-client
+# langchain is used for language model capabilities
 langchain==0.0.225
+# streamlit is used for building web applications
 streamlit

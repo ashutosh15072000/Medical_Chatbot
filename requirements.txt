@@ -1,14 +1,31 @@
-# List of required Python packages for the project
+# Requirements
+# ===========
 
-# ctransformers is used for converting data types
-ctransformers==0.2.27
-# sentence-transformers is used for sentence embeddings
+# This file specifies the dependencies required to run the application.
+
+# sentence-transformers (version 3.0.1) is required for natural language processing tasks.
 sentence-transformers==3.0.1
-# pinecone-client is used for interacting with Pinecone vector database
-pinecone-client
-# langchain is used for language model capabilities
-langchain==0.2.5
-# streamlit is used for building web applications
-streamlit==1.35.0
 
+# pinecone-client is required for interacting with the Pinecone vector database.
+pinecone-client
+
+# langchain (version 0.2.5) is required for language model functionality.
+langchain==0.2.5
+
+# Flask is required for building the web application.
+flask
+
+# pypdf is required for PDF processing.
 pypdf
+
+# python-dotenv is required for loading environment variables from a .env file.
+python-dotenv
+
+langchain-pinecone
+
+langchain-community
+
+langchain-huggingface
+
+# The `-e .` flag specifies that the current directory should be treated as a package.
+-e .

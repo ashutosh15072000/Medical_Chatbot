@@ -61,6 +61,10 @@ list_of_files = [
     "static/.gitkeep",
     "template/index.html",
     "static/style.css",
-    "template/script.js"
+    "template/script.js",
+    "src/logger/logging_config.py",
+    "src/logger/__init__.py",
+    "src/exception/__init__.py",
+    "src/exception/CustomException.py",
 ]
 create_files_and_directories(list_of_files)

@@ -1,3 +1,7 @@
-from src.logger import logging_config
+from src.exception import CustomException
+import sys
+try:
+    a=7/"0"
 
-logging_config.configure_logging("hello")
+except Exception as e:
+    raise CustomException(e,sys) from e

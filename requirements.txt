@@ -27,5 +27,14 @@ langchain-community
 
 langchain-huggingface
 
+python-box
+
+ensure
+
+pyYAML
+
+types-pyYAML
+
+
 # The `-e .` flag specifies that the current directory should be treated as a package.
 -e .

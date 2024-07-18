@@ -66,5 +66,7 @@ list_of_files = [
     "src/logger/__init__.py",
     "src/exception/__init__.py",
     "src/exception/CustomException.py",
-]
+    "src/utils/__init__.py",
+    "src/utils/common.py"
+]  
 create_files_and_directories(list_of_files)

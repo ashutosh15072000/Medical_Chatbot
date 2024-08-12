@@ -25,9 +25,9 @@ def text_split(extracted_data):
 
 
 ## Download Embdedding Model
-def download_huuging_face_embeddings():
+def download_hugging_face_embeddings():
     embedding=HuggingFaceEmbeddings(
-       model_name="all-MiniLM-L6-v2" ,
+       model_name="all-MiniLM-L6-v2",
        show_progress=True
     )
     return embedding

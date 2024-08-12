@@ -1,6 +1,6 @@
 import os 
 from dotenv import load_dotenv
-from src.helper import load_pdf,text_split,download_hugging_face_embeddings
+from src.helper import load_pdf, text_split, download_hugging_face_embeddings
 
 from langchain.vectorstores import Pinecone
 import pinecone
@@ -19,14 +19,6 @@ from langchain_pinecone import PineconeVectorStore
 
 
 
-
-
-
-
-
-
-
-
 app = Flask(__name__)
 
 load_dotenv()
@@ -36,57 +28,101 @@ PINECONE_API_ENV = os.environ.get('PINECONE_API_ENV')
 
 
 embeddings = download_hugging_face_embeddings()
-
-# #Initializing the Pinecone
-# pinecone.init(api_key=PINECONE_API_KEY,
-#               environment=PINECONE_API_ENV)
-
-index_name="medical-chatbot"
-
-#Loading the index
-docsearch=PineconeVectorStore.from_existing_index(index_name, embeddings)
+    
 
 
-PROMPT=PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
-chain_type_kwargs={"prompt": PROMPT}
+index_name = "medical-chatbot"
 
-# llm=CTransformers(model="model/llama-2-7b-chat.ggmlv3.q4_0.bin",
-#                   model_type="llama",
-#                   config={'max_new_tokens':512,
-#                           'temperature':0.8})
+# Loading the index
+def load_index(index_name: str, embeddings: dict) -> PineconeVectorStore:
+  
+    # Loads an existing Pinecone index.
 
-groq_api_key=os.getenv("GROQ_API_KEY")
-llm=ChatGroq(groq_api_key=groq_api_key,model="llama-3.1-8b-instant")
-llm
+    # Args:
+    #     index_name (str): Index name
+    #     embeddings (dict): Embeddings dictionary
+
+    # Returns:
+    #     PineconeVectorStore: Loaded index
+   
+    return PineconeVectorStore.from_existing_index(index_name,embeddings)
+
+docsearch = load_index(index_name, embeddings)
 
 
-qa=RetrievalQA.from_chain_type(
-    llm=llm, 
-    chain_type="stuff", 
-    retriever=docsearch.as_retriever(search_kwargs={'k': 2}),
-    return_source_documents=True, 
-    chain_type_kwargs=chain_type_kwargs)
+PROMPT = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
 
-question="what is tubercolsis"
-print(qa.invoke({'query':question}))
+def create_chain_type_kwargs(prompt: PromptTemplate) -> dict:
+   
+    # Creates chain type kwargs with prompt.
+
+    # Args:
+    #     prompt (PromptTemplate): Prompt template
+
+    # Returns:
+    #     dict: Chain type kwargs
+   
+    return {"prompt": prompt}
+
+chain_type_kwargs = create_chain_type_kwargs(PROMPT)
+
+
+def create_llm(groq_api_key: str, model: str) -> ChatGroq:
+   
+    # Creates a ChatGroq LLM.
+
+    # Args:
+    #     groq_api_key (str): Groq API key
+    #     model (str): Model name
+
+    # Returns:
+    #     ChatGroq: LLM instance
+    
+    return ChatGroq(groq_api_key=groq_api_key, model=model)
+
+groq_api_key = os.getenv("GROQ_API_KEY")
+llm = create_llm(groq_api_key, "llama-3.1-8b-instant")
+
+
+def create_retrieval_qa(llm: ChatGroq, retriever: PineconeVectorStore, chain_type_kwargs: dict) -> RetrievalQA:
+  
+    # Creates a RetrievalQA chain.
+
+    # Args:
+    #     llm (ChatGroq): LLM instance
+    #     retriever (PineconeVectorStore): Retriever instance
+    #     chain_type_kwargs (dict): Chain type kwargs
+
+    # Returns:
+    #     RetrievalQA: RetrievalQA chain instance
+  
+    return RetrievalQA.from_chain_type(
+        llm=llm, 
+        chain_type="stuff", 
+        retriever=retriever.as_retriever(search_kwargs={'k': 2}),
+        return_source_documents=True, 
+        chain_type_kwargs=chain_type_kwargs)
+
+qa = create_retrieval_qa(llm, docsearch, chain_type_kwargs)
+
 
 @app.route("/")
-def index():
+def index() -> str:
+  
     return render_template('chat.html')
 
 
-
 @app.route("/get", methods=["GET", "POST"])
-def chat():
+def chat() -> str:
+   
     msg = request.form["msg"]
     input = msg
     print(input)
-    result=qa({"query": input})
+    result = qa({"query": input})
     print("Response : ", result["result"])
     return str(result["result"])
 
 
-
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port= 8080, debug= True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
